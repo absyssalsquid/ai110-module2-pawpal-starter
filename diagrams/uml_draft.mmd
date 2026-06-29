@@ -1,0 +1,90 @@
+classDiagram
+    %% PawPal — single owner, daily routines only.
+    %% Task is the recurring definition; TaskInstance is a day's occurrence
+    %% (where completion status lives). status is set by the user;
+    %% notes can record why a task was skipped or missed.
+
+    class App {
+        +Owner owner
+        +Scheduler scheduler
+    }
+
+    class Scheduler {
+        +list~TaskInstance~ schedule
+        +generate(Owner owner)
+    }
+
+    class Owner {
+        +str name
+        +Dictionary~int, Pet~ pets_by_id
+
+        +add(Pet pet)
+        +remove(Pet pet)
+    }
+
+    class Pet {
+        +str name
+        +str species
+        +str breed
+        +datetime dob
+        +str color
+        +bool active
+        +Dictionary~int, Task~ tasks_by_id
+
+        +add(Task task)
+        +remove(Task task)
+    }
+
+    class Task { 
+        +str name
+        +str desc
+        +time ideal_start_time
+        +timedelta flexibility
+        +timedelta duration
+        +timedelta frequency
+        +TaskType type
+        +Priority priority
+    }
+
+    class TaskInstance {
+        +int pet_id
+        +int task_id
+        +datetime scheduled_time
+        +Status status
+        +str notes
+    }
+
+    class TaskType {
+        <<enumeration>>
+        MEDS
+        WALK
+        FEEDING
+        BATH
+    }
+
+    class Priority {
+        <<enumeration>>
+        LOW
+        MED
+        HIGH
+    }
+
+    class Status {
+        <<enumeration>>
+        PENDING
+        DONE
+        SKIPPED
+        MISSED
+    }
+
+    App --> Owner
+    App --> Scheduler
+    Scheduler --> Owner : reads
+    Scheduler --> TaskInstance : generates
+    Owner "1" --> "*" Pet : has
+    Pet "1" --> "*" Task : has
+    TaskInstance --> Task : task_id
+    TaskInstance --> Pet : pet_id
+    Task --> TaskType
+    Task --> Priority
+    TaskInstance --> Status

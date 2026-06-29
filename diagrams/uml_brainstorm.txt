@@ -1,0 +1,64 @@
+app is for single user, will not have more than one owner. all pets belong to user
+scope limit: DAILY routines only, no need for long term memory before or future
+
+this is given structure for assignment
+    Task: Represents a single activity (description, time, frequency, completion status).
+    Pet: Stores pet details and a list of tasks.
+    Owner: Manages multiple pets and provides access to all their tasks.
+    Scheduler: The "Brain" that retrieves, organizes, and manages tasks across pets.
+
+App
+    Owner owner
+    Scheduler scheduler
+
+Scheduler
+    generateSchedule(owner) -- generates schedule for owner
+    list<TaskInstance> schedule
+
+Owner
+    str name
+    dict<int, Pet> pets
+    
+    add(pet)
+    remove(pet)
+
+Pet
+    int id
+    str name
+    str species
+    str breed
+    datetime.datetime dob
+    str color -- for color coding tasks in schedule
+    bool active
+
+    dict<int, Task> tasks
+
+    add(task)
+    remove(task)
+
+Task
+    int id
+    str name
+    str desc
+    datetime.time ideal_start_time
+    datetime.timedelta flexibility -- how early or late task can be started at
+    datetime.timedelta duration
+    datetime.timedelta frequency
+    str notes
+    
+    enum type (meds/walk/feeding/bath)
+    enum priority (low, med, hi) -- determines penalty for skipping
+
+Task type has default flexibility and priority, but can be overridden manually
+            | flexibility | priority
+meds        | 30 min      | high
+feeding     | 1 hr        | high
+walk        | 2 hr        | med
+
+// Task is the recurring definition; TaskInstance is a day's occurrence, where completion status and notes on event lives
+TaskInstance
+    int task_id
+    int pet_id
+    datetime.datetime scheduled_time
+    enum status (pending/done/skipped/missed)
+    str notes

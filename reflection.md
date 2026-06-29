@@ -2,15 +2,21 @@
 
 ## 1. System Design
 
+Core actions: Add Pet, add Need, generate Schedule, see Schedule
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+     - `Owner` has `Pet`s. `Pet` has `Task`s. Scheduler populates self with `TaskInstance`s
 - What classes did you include, and what responsibilities did you assign to each?
+    - Task, Pet, Owner, Scheduler. 
 
 **b. Design changes**
 
 - Did your design change during implementation?
+    - Yes
 - If yes, describe at least one change and why you made it.
+    - Added a `TaskInstance` class. The assignment structure lists a single `Task` that holds both its definition and its completion status, but because tasks recur daily there was no place to record completion per occurrence — one `Task` ("give medication every 6 hours") can be done once and missed later. So I split the model: `Task` is the recurring definition (name, ideal start time, flexibility, duration, frequency, type, priority), and `TaskInstance` is a single day's occurrence (scheduled time, status, notes). Completion status lives on the instance. `status` is set by the user and `notes` can record *why* something was skipped or missed. 
 
 ---
 
