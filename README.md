@@ -88,10 +88,10 @@ Sample test output:
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Filtering | Scheduler.filterPending() | by completion |
+| Task sorting | Scheduler.find_gap(ti), Scheduler.fit_with_delay(ti) | finds slots where task can be inserted |
+| Conflict handling | Scheduler.insert(ti), Scheduler.extract_conflicts(ti) | extracts tasks with overlapping time slots to be reinserted by insert() |
+| Recurring tasks | App.mark_complete() | creates a new TaskInstance once the previous is marked complete|
 
 ## 📸 Demo Walkthrough
 

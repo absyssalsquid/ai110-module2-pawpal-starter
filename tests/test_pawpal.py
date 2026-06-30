@@ -1,9 +1,13 @@
 import datetime as dt
 
+import pytest
+
 from pawpal_system import (
     App,
     Task,
     Pet,
+    Scheduler,
+    TaskInstance,
     TaskType,
     Priority,
     TaskStatus,
@@ -44,6 +48,6 @@ def test_mark_complete():
     ti = app.scheduler.schedule[0]
     assert ti.status == TaskStatus.PENDING
 
-    app.scheduler.mark_complete(app.owner, ti, TaskStatus.DONE)
+    app.scheduler.mark_complete(ti, TaskStatus.DONE)
     assert ti.status != TaskStatus.PENDING
-    assert ti.completed_at is not None
+

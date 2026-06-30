@@ -25,13 +25,16 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **a. Constraints and priorities**
 
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
+    - Scheduler considers priority and time flexibility (how late a task can be done). Tasks are inserted in order of creation. If two tasks conflict, the lower priority tasks is delayed. 
 - How did you decide which constraints mattered most?
+    - based on on 
 
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
+    - Ideally you would cascade delaying tasks instead of just looking at the tasks within the block of time where the conflict occurs.
 - Why is that tradeoff reasonable for this scenario?
-
+    - This would increase algorithmic complexity a lot, development time tradeoff. For the kind of data (not likely to be densely packed) this is okay
 ---
 
 ## 3. AI Collaboration
@@ -39,7 +42,9 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+    - debugging, writing test cases, and UI creation
 - What kinds of prompts or questions were most helpful?
+    - was good at explaining why certain bugs happened
 
 **b. Judgment and verification**
 
@@ -58,6 +63,7 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
+    - very confident it works as intended. Not certain that it is an optimal implementation.
 - What edge cases would you test next if you had more time?
 
 ---
