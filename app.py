@@ -12,7 +12,6 @@ st.session_state.setdefault('selected_pet_id', None)
 st.session_state.setdefault('editing_pet', False)
 st.session_state.setdefault('adding_task', False)
 st.session_state.setdefault('editing_task_id', None)
-st.session_state.setdefault('editing_ti', None)
 
 app = st.session_state.app
 owner = app.owner
@@ -150,7 +149,7 @@ def render_schedule(data, empty_msg, key_prefix):
     once on a page (e.g. upcoming vs. unscheduled) without colliding ids.
     """
     if data:
-        widths = [1, 1.5, 3, 1, 1.5, 0.9, 0.9, 0.9]
+        widths = [1, 1.5, 3, 1, 1.5, 0.9, 0.9]
         head = st.columns(widths)
         for col, label in zip(head, ["Date", "Pet", "Task", "Time", "Duration"]):
             col.markdown(f"**{label}**")
@@ -178,10 +177,7 @@ def render_schedule(data, empty_msg, key_prefix):
             if cols[6].button("❌", key=f"{key_prefix}_missed_{i}", help="Mark missed"):
                 sched.mark_complete(ti, TaskStatus.MISSED)
                 st.rerun()
-            if cols[7].button("✏️", key=f"{key_prefix}_edit_{i}", help="Edit"):
-                st.session_state.editing_ti = ti
-                seed_ti_state(ti)
-                st.rerun()
+
     else:
         st.info(empty_msg)
 
@@ -200,36 +196,6 @@ def render_schedule_view():
     # ---- Unscheduled ----
     st.subheader("Unscheduled (conflict detected)")
     render_schedule(sched.unscheduled, "None.", key_prefix="unscheduled")
-
-
-    # ---- Edit a scheduled instance ----
-    ti = st.session_state.editing_ti
-    if ti is not None and (ti in sched.schedule or ti in sched.unscheduled):
-        pet_name, task_name = ti_label(ti)
-        duration = ti.end - ti.start
-        st.divider()
-        st.subheader(f"Edit · {pet_name} – {task_name}")
-
-        st.markdown("**Start time**")
-        c = st.columns(3)
-        c[0].date_input("Date", key="eti_date")
-        c[1].number_input("Hour", min_value=0, max_value=23, key="eti_h")
-        c[2].number_input("Minute", min_value=0, max_value=59, key="eti_m")
-
-        save, cancel = st.columns(2)
-        if save.button("Save", use_container_width=True, key="save_ti"):
-            ti.start = dt.datetime.combine(
-                st.session_state.eti_date,
-                dt.time(int(st.session_state.eti_h), int(st.session_state.eti_m)),
-            )
-            ti.end = ti.start + duration
-            ti.status = st.session_state.eti_status
-            st.session_state.editing_ti = None
-            st.rerun()
-        if cancel.button("Cancel", use_container_width=True, key="cancel_ti"):
-            st.session_state.editing_ti = None
-            st.rerun()
-
 
     # ---- Completed (reverse order, behind a dropdown) ----
     with st.expander(f"Completed ({len(completed)})"):
@@ -263,7 +229,6 @@ with st.sidebar:
 
     if st.button("📅 Overall schedule", use_container_width=True):
         st.session_state.view = 'schedule'
-        st.session_state.editing_ti = None
         st.rerun()
 
     st.divider()

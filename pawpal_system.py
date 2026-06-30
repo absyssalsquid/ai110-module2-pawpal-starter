@@ -20,9 +20,7 @@ class Priority(Enum):
 class TaskStatus(Enum):
     PENDING = 1
     DONE = 2
-    SKIPPED = 3
-    MISSED = 4
-
+    MISSED = 3
 
 def format_interval(td: dt.timedelta) -> str:
     """Format a timedelta as a human-readable string.
@@ -180,7 +178,6 @@ class TaskInstance:
     CHECKMARKS = {
         TaskStatus.PENDING: ' ',
         TaskStatus.DONE: 'o',
-        TaskStatus.SKIPPED: '-',
         TaskStatus.MISSED: 'x'
     }
 
@@ -251,8 +248,6 @@ class Scheduler:
         b_i = len(self.schedule)-1
         while (self.schedule[b_i].end > ti.start) and b_i >= 0:
             b_i -= 1
-
-        print(b_i)
 
         for i in range(b_i+1, len(self.schedule)):
             before = self.schedule[i]

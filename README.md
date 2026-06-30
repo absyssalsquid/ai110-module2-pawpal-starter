@@ -79,7 +79,50 @@ pytest --cov
 Sample test output:
 
 ```
-# Paste your pytest output here
+collected 40 items
+
+tests/test_pawpal.py::test_add_task PASSED                                                        [  2%]
+tests/test_pawpal.py::test_mark_complete PASSED                                                   [  5%]
+tests/test_pawpal.py::test_find_gap_empty_schedule PASSED                                         [  7%]
+tests/test_pawpal.py::test_find_gap_before_first PASSED                                           [ 10%]
+tests/test_pawpal.py::test_find_gap_touching_before_first PASSED                                  [ 12%]
+tests/test_pawpal.py::test_find_gap_after_last PASSED                                             [ 15%]
+tests/test_pawpal.py::test_find_gap_touching_after_last PASSED                                    [ 17%]
+tests/test_pawpal.py::test_find_gap_overlaps_only_instance PASSED                                 [ 20%]
+tests/test_pawpal.py::test_find_gap_identical_span_overlaps PASSED                                [ 22%]
+tests/test_pawpal.py::test_find_gap_middle_gap PASSED                                             [ 25%]
+tests/test_pawpal.py::test_find_gap_middle_gap_exact_fit PASSED                                   [ 27%]
+tests/test_pawpal.py::test_find_gap_middle_gap_one_minute_too_big PASSED                          [ 30%]
+tests/test_pawpal.py::test_find_gap_overlaps_first_of_many PASSED                                 [ 32%]
+tests/test_pawpal.py::test_find_gap_overlaps_last_of_many PASSED                                  [ 35%]
+tests/test_pawpal.py::test_find_gap_envelops_existing_instance PASSED                             [ 37%]
+tests/test_pawpal.py::test_find_gap_zero_duration_in_gap PASSED                                   [ 40%]
+tests/test_pawpal.py::test_fit_delay_into_following_gap PASSED                                    [ 42%]
+tests/test_pawpal.py::test_fit_delay_skips_too_small_gap PASSED                                   [ 45%]
+tests/test_pawpal.py::test_fit_delay_flexibility_boundary_inclusive PASSED                        [ 47%]
+tests/test_pawpal.py::test_fit_delay_gap_exactly_duration PASSED                                  [ 50%]
+tests/test_pawpal.py::test_fit_delay_exceeds_flexibility_returns_none PASSED                      [ 52%]
+tests/test_pawpal.py::test_fit_delay_appends_after_last_instance PASSED                           [ 55%]
+tests/test_pawpal.py::test_fit_delay_no_instance_after_start_returns_none PASSED                  [ 57%]
+tests/test_pawpal.py::test_fit_delay_start_before_all_ends PASSED                                 [ 60%]
+tests/test_pawpal.py::test_extract_conflicts_empty_schedule PASSED                                [ 62%]
+tests/test_pawpal.py::test_extract_conflicts_no_overlap_kept PASSED                               [ 65%]
+tests/test_pawpal.py::test_extract_conflicts_single_lower_priority_removed PASSED                 [ 67%]
+tests/test_pawpal.py::test_extract_conflicts_equal_priority_kept PASSED                           [ 70%]
+tests/test_pawpal.py::test_extract_conflicts_higher_priority_kept PASSED                          [ 72%]
+tests/test_pawpal.py::test_extract_conflicts_touching_boundary_kept PASSED                        [ 75%]
+tests/test_pawpal.py::test_extract_conflicts_multiple_removed_in_reverse_order PASSED             [ 77%]
+tests/test_pawpal.py::test_extract_conflicts_mixed_survivors_keep_order PASSED                    [ 80%]
+tests/test_pawpal.py::test_extract_conflicts_zero_duration_ti_inside_interval PASSED              [ 82%]
+tests/test_pawpal.py::test_mark_complete_daily_task_creates_next_day_instance PASSED              [ 85%]
+tests/test_pawpal.py::test_mark_complete_sets_status_on_original PASSED                           [ 87%]
+tests/test_pawpal.py::test_mark_complete_successor_copies_identifiers_and_is_pending PASSED       [ 90%]
+tests/test_pawpal.py::test_mark_complete_non_done_status_still_creates_successor PASSED           [ 92%]
+tests/test_pawpal.py::test_mark_complete_weekly_interval PASSED                                   [ 95%]
+tests/test_pawpal.py::test_mark_complete_sub_day_interval_same_day PASSED                         [ 97%]
+tests/test_pawpal.py::test_mark_complete_successor_timing_independent_of_actual_completion PASSED [100%]
+
+========================================== 40 passed in 0.08s ==========================================
 ```
 
 ## 📐 Smarter Scheduling

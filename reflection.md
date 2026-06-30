@@ -49,8 +49,9 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
+    - AI essentially recreated a method that exists in the system within the frontend. I rejected the code and made it call the system method instead.
 - How did you evaluate or verify what the AI suggested?
-
+    - read all of the changes that the AI suggests
 ---
 
 ## 4. Testing and Verification
@@ -58,13 +59,16 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **a. What you tested**
 
 - What behaviors did you test?
+    - scheduling behaviors, task creation, task succession
 - Why were these tests important?
+    - ensures core algorithm behavior is correct
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
     - very confident it works as intended. Not certain that it is an optimal implementation.
 - What edge cases would you test next if you had more time?
+    - i think i got all edge cases here tbh
 
 ---
 

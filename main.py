@@ -78,11 +78,12 @@ def init_template():
 
     return app
 
-app = init_template()
-app.scheduler.printSchedule(app.owner)
+if __name__ == "__main__":
+    app = init_template()
+    app.scheduler.printSchedule(app.owner)
 
-print("\nmark 5 tasks as complete")
-for ti in app.scheduler.schedule[:5]:
-    app.scheduler.mark_complete(ti, TaskStatus.DONE)
+    print("\nmark 5 tasks as complete")
+    for ti in app.scheduler.schedule[:5]:
+        app.scheduler.mark_complete(ti, TaskStatus.DONE)
 
-app.scheduler.printSchedule(app.owner)
+    app.scheduler.printSchedule(app.owner)
