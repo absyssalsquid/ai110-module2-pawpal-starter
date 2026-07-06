@@ -66,7 +66,7 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
-    - very confident it works as intended. Not certain that it is an optimal implementation.
+    - 5 stars. very confident it works as intended. Not certain that it is an optimal implementation though.
 - What edge cases would you test next if you had more time?
     - i think i got all edge cases here tbh
 
@@ -77,11 +77,14 @@ Core actions: Add Pet, add Need, generate Schedule, see Schedule
 **a. What went well**
 
 - What part of this project are you most satisfied with?
+    - Easy UI
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
+    - more optimal algorithm for evicting and re-inserting tasks. allow editing of task instances: after editing, the task is evicted from the schedule and re-inserted
 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+    - ai is good at identifying edge cases in tests, possible future problems in architecture

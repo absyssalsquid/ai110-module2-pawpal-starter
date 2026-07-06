@@ -125,25 +125,28 @@ tests/test_pawpal.py::test_mark_complete_successor_timing_independent_of_actual_
 ========================================== 40 passed in 0.08s ==========================================
 ```
 
-## 📐 Smarter Scheduling
-
-> Fill in once you've implemented scheduling logic.
+## 📐 Features
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Filtering | Scheduler.filterPending() | by completion |
-| Task sorting | Scheduler.find_gap(ti), Scheduler.fit_with_delay(ti) | finds slots where task can be inserted |
-| Conflict handling | Scheduler.insert(ti), Scheduler.extract_conflicts(ti) | extracts tasks with overlapping time slots to be reinserted by insert() |
-| Recurring tasks | App.mark_complete() | creates a new TaskInstance once the previous is marked complete|
+| Filtering | `Scheduler.filterPending()`, `Scheduler.removePending(match_fn)` | `filterPending()` splits the schedule into pending vs. completed by `TaskStatus`; `removePending()` removes only pending instances matching a predicate and reports whether any completed ones remain (so history is preserved). |
+| Ordered placement (sorting) | `Scheduler.insert(ti)`, `Scheduler.find_gap(ti)` | The schedule is kept sorted by start time via ordered insertion rather than re-sorting: `find_gap()` returns the index of the first free, non-overlapping slot (boundaries inclusive — touching tasks don't conflict). |
+| Conflict handling | `Scheduler.insert(ti)`, `Scheduler.extract_conflicts(ti)`, `Scheduler.fit_with_delay(ti)` | When no free slot exists, `extract_conflicts()` evicts lower-priority overlapping instances; the new task and evictees are re-inserted in priority order. A task that still can't fit is delayed by `fit_with_delay()` (shifted later as long as the delay stays within its `flexibility`), and otherwise parked in `unscheduled`. |
+| Recurring tasks | `Scheduler.mark_complete(ti, status)` | Marking an instance sets its status and spawns the next occurrence at `ti.start + task.interval` (end = start + `duration`), then inserts it — supporting daily, weekly, and sub-day cadences. |
+| Priority & flexibility model | `Task.priority`, `Task.flexibility`, `DEFAULT_PF` | Each task type has default priority/flexibility (`DEFAULT_PF`); these drive eviction order and how far a task may be delayed during conflict resolution. |
 
 ## 📸 Demo Walkthrough
 
 Describe your app in numbered steps so a reader can follow along without watching a video:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. Create multiple pets in the sidebar
+2. For each pet, select the pet in the sidebar and create multiple tasks for each pet
+    - on this page you can edit the pet and also edit existing tasks
+    - after creation, tasks are automatically added to the schedule
+3. Click Overall schedule in the sidebar to view upcoming tasks for all pets
+4. Mark task as complete or missed
+5. See any conflicting events in the Unscheduled section, and past events in the Completed section
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+<img src="walkthrough/schedule.png">  
+<img src="walkthrough/pet.png">  

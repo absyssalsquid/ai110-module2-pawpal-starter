@@ -79,6 +79,10 @@ DEFAULT_PF = {
     TaskType.GROOMING: {
         'priority': Priority.LOW,
         'flexibility': dt.timedelta(days=5)
+    },
+    TaskType.OTHER: {
+        'priority': Priority.LOW,
+        'flexibility': dt.timedelta(days=7)
     }
 }
 
@@ -217,11 +221,13 @@ class Scheduler:
 
     def mark_complete(self, ti: TaskInstance, status: TaskStatus):
         """Set a task instance's status and schedule its next occurrence."""
+        if ti.status != TaskStatus.PENDING: return
+        
         ti.status = status
 
         # make new task instance
         task = ti.task_ref
-        start_time = ti.start + task.interval
+        start_time = ti.ideal_start + task.interval
         end_time = start_time + task.duration
 
         new_ti = TaskInstance(ti.pet_id, ti.task_id, task, start_time, end_time)
@@ -246,7 +252,7 @@ class Scheduler:
     def fit_with_delay(self, ti: TaskInstance) -> int | None:
         """Try to fit ti by shifting its start time within flexibility bounds. Return insertion index or None."""
         b_i = len(self.schedule)-1
-        while (self.schedule[b_i].end > ti.start) and b_i >= 0:
+        while b_i >= 0 and (self.schedule[b_i].end > ti.start):
             b_i -= 1
 
         for i in range(b_i+1, len(self.schedule)):
@@ -266,7 +272,7 @@ class Scheduler:
                 return None
     
     def extract_conflicts(self, ti:TaskInstance):
-        # get events that overlap ti and are lower priority
+        """from the schedule, extract and return events that overlap ti and are lower priority"""
         conflicts = []
         for i in range(len(self.schedule)-1, -1, -1):
             curr = self.schedule[i]
@@ -300,6 +306,7 @@ class Scheduler:
             return
     
     def filterPending(self):
+        """Separate the schedule into pending and completed task instances."""
         is_pending = lambda ti: ti.status.value == TaskStatus.PENDING.value
         pending   = [ti for ti in self.schedule if is_pending(ti)]
         completed = [ti for ti in self.schedule if not is_pending(ti)]
@@ -327,6 +334,7 @@ class Scheduler:
                 print(ti.toString(owner, with_date=True))
 
     def removePending(self, match_fn):
+        """Drop pending task instances that meet the criteria of the match function from the scheduler."""
         is_pending = lambda ti: ti.status.value == TaskStatus.PENDING.value
 
         has_completed = False
@@ -338,9 +346,9 @@ class Scheduler:
                 else: has_completed = True
 
         for i in range(len(self.unscheduled)-1, -1, -1):
-            ti = self.schedule[i]
+            ti = self.unscheduled[i]
             if match_fn(ti):
-                if is_pending(ti): self.scheduler.unscheduled.pop(i)
+                if is_pending(ti): self.unscheduled.pop(i)
                 else: has_completed = True
         
         return has_completed

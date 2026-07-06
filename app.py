@@ -24,10 +24,11 @@ sched = app.scheduler
 # =======================================================
 
 def split_flex(td):
-    """Break a timedelta into (days, hours)."""
-    total_h = td.total_seconds() / 3600
-    days = int(total_h // 24)
-    return days, int(round(total_h - days * 24))
+    """Break a timedelta into (days, hours, minutes)."""
+    total_min = int(round(td.total_seconds() / 60))
+    days, rem = divmod(total_min, 24 * 60)
+    hours, minutes = divmod(rem, 60)
+    return days, hours, minutes
 
 
 def split_interval(td):
@@ -44,18 +45,18 @@ def seed_task_state(prefix, task=None):
     if task is None:
         t = list(TaskType)[0]
         d = DEFAULT_PF[t]
-        flex_d, flex_h = split_flex(d['flexibility'])
+        flex_d, flex_h, flex_m = split_flex(d['flexibility'])
         values = {
             'name': "", 'desc': "", 'type': t,
             'date': dt.date.today(), 'start_h': 8, 'start_min': 0,
             'dur': 30,
             'rep_weeks': 0, 'rep_days': 1, 'rep_hours': 0,
             'priority': d['priority'],
-            'flex_days': flex_d, 'flex_hours': flex_h,
+            'flex_days': flex_d, 'flex_hours': flex_h, 'flex_min': flex_m,
             'active': True,
         }
     else:
-        flex_d, flex_h = split_flex(task.flexibility)
+        flex_d, flex_h, flex_m = split_flex(task.flexibility)
         rep_w, rep_d, rep_h = split_interval(task.interval)
         values = {
             'name': task.name, 'desc': task.desc or "", 'type': task.type,
@@ -64,7 +65,7 @@ def seed_task_state(prefix, task=None):
             'dur': int(task.duration.total_seconds() // 60),
             'rep_weeks': rep_w, 'rep_days': rep_d, 'rep_hours': rep_h,
             'priority': task.priority,
-            'flex_days': flex_d, 'flex_hours': flex_h,
+            'flex_days': flex_d, 'flex_hours': flex_h, 'flex_min': flex_m,
             'active': task.active,
         }
     for k, v in values.items():
@@ -74,10 +75,11 @@ def seed_task_state(prefix, task=None):
 def sync_pf(prefix):
     """When the task type changes, reset priority and flexibility to its defaults."""
     d = DEFAULT_PF[st.session_state[f"{prefix}_type"]]
-    flex_d, flex_h = split_flex(d['flexibility'])
+    flex_d, flex_h, flex_m = split_flex(d['flexibility'])
     st.session_state[f"{prefix}_priority"] = d['priority']
     st.session_state[f"{prefix}_flex_days"] = flex_d
     st.session_state[f"{prefix}_flex_hours"] = flex_h
+    st.session_state[f"{prefix}_flex_min"] = flex_m
 
 
 def render_task_fields(prefix):
@@ -100,9 +102,10 @@ def render_task_fields(prefix):
     st.number_input("Duration (minutes)", min_value=1, max_value=480, key=f"{prefix}_dur")
 
     st.markdown("**Flexibility**")
-    fd, fh = st.columns(2)
+    fd, fh, fm = st.columns(3)
     fd.number_input("Days", min_value=0, max_value=31, key=f"{prefix}_flex_days")
     fh.number_input("Hours", min_value=0, max_value=23, key=f"{prefix}_flex_hours")
+    fm.number_input("Minutes", min_value=0, max_value=59, key=f"{prefix}_flex_min")
 
     st.markdown("**Repeat every**")
     rw, rd, rh = st.columns(3)
@@ -125,7 +128,7 @@ def build_task(prefix):
         dt.timedelta(weeks=int(g('rep_weeks')), days=int(g('rep_days')), hours=int(g('rep_hours'))),
         g('type'),
         g('priority'),
-        dt.timedelta(days=int(g('flex_days')), hours=int(g('flex_hours'))),
+        dt.timedelta(days=int(g('flex_days')), hours=int(g('flex_hours')), minutes=int(g('flex_min'))),
     )
 
 def ti_label(ti):
@@ -341,12 +344,12 @@ else:
             cols[2].write(task.ideal_start_time.time().strftime("%H:%M"))
             cols[3].write(format_interval(task.duration))
             cols[4].write(format_interval(task.interval))
-            if cols[5].button("✏️", key=f"edit_task_{task_id}"):
+            if cols[5].button("✏️", key=f"edit_task_{task_id}", help="Edit"):
                 st.session_state.editing_task_id = task_id
                 st.session_state.adding_task = False
                 seed_task_state("edit_task", task)
                 st.rerun()
-            if cols[6].button("🗑️", key=f"del_task_{task_id}"):
+            if cols[6].button("🗑️", key=f"del_task_{task_id}", help="Delete or deactivate"):
                 if st.session_state.editing_task_id == task_id:
                     st.session_state.editing_task_id = None
                 app.delete_task(selected_id, task_id)

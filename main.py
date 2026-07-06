@@ -29,12 +29,12 @@ def init_template():
         app.addTask(pet_id, task)
 
     app.addTask(eoin, Task(
-        'Competing task', None, 
+        'CONFLICTING TASK', None, 
         dt.datetime(year=2026, month=7, day=1, hour=7, minute=0),
         dt.timedelta(hours=1),
         dt.timedelta(weeks=4), 
-        TaskType.GROOMING, 
-        DEFAULT_PF[TaskType.GROOMING]['priority'],
+        TaskType.OTHER, 
+        DEFAULT_PF[TaskType.OTHER]['priority'],
         dt.timedelta(minutes=15)
         # DEFAULT_PF[TaskType.GROOMING]['flexibility']
     ))

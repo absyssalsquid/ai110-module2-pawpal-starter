@@ -1,0 +1,109 @@
+classDiagram
+    %% PawPal+ — single owner, multiple pets, recurring care tasks.
+    %% Task is the recurring definition; TaskInstance is one occurrence
+    %% (where scheduling time and completion status live).
+    %% App is the root; Scheduler owns the placed/unplaced instances and
+    %% resolves time conflicts by priority and per-task flexibility.
+
+    class App {
+        +Owner owner
+        +Scheduler scheduler
+        +addTask(int pet_id, Task task)
+        +delete_task(int pet_id, int task_id)
+        +deletePet(int pet_id)
+    }
+
+    class Scheduler {
+        +list~TaskInstance~ schedule
+        +list~TaskInstance~ unscheduled
+        +mark_complete(TaskInstance ti, TaskStatus status)
+        +insert(TaskInstance ti, bool pop_conflicts)
+        +find_gap(TaskInstance ti) int
+        +fit_with_delay(TaskInstance ti) int
+        +extract_conflicts(TaskInstance ti) list~TaskInstance~
+        +filterPending() tuple
+        +removePending(callable match_fn) bool
+        +printSchedule(Owner owner)
+    }
+
+    class Owner {
+        +str name
+        +Dictionary~int, Pet~ pets
+        +int next_id
+        +getTask(int pet_id, int task_id) Task
+        +addPet(Pet pet) int
+        +deletePet(int pet_id)
+        +deactivatePet(int pet_id)
+    }
+
+    class Pet {
+        +str name
+        +str species
+        +str breed
+        +datetime dob
+        +bool active
+        +Dictionary~int, Task~ tasks
+        +int next_id
+        +addTask(Task task) int
+        +deleteTask(int task_id)
+        +deactivateTask(int task_id)
+    }
+
+    class Task {
+        +str name
+        +str desc
+        +datetime ideal_start_time
+        +timedelta duration
+        +timedelta interval
+        +TaskType type
+        +Priority priority
+        +timedelta flexibility
+        +bool active
+    }
+
+    class TaskInstance {
+        +int pet_id
+        +int task_id
+        +Task task_ref
+        +datetime start
+        +datetime end
+        +datetime ideal_start
+        +TaskStatus status
+        +str notes
+        +toString(Owner owner, bool with_date) str
+    }
+
+    class TaskType {
+        <<enumeration>>
+        MEDS
+        FEEDING
+        WALK
+        GROOMING
+        CLEANING
+        OTHER
+    }
+
+    class Priority {
+        <<enumeration>>
+        HIGH
+        MED
+        LOW
+    }
+
+    class TaskStatus {
+        <<enumeration>>
+        PENDING
+        DONE
+        MISSED
+    }
+
+    App *--> Owner : owns
+    App *--> Scheduler : owns
+    Owner "1" o--> "*" Pet : pets
+    Pet "1" o--> "*" Task : tasks
+    Scheduler "1" o--> "*" TaskInstance : schedule / unscheduled
+    Scheduler ..> Owner : reads (printSchedule)
+    TaskInstance --> Task : task_ref
+    TaskInstance ..> TaskStatus
+    Task --> TaskType
+    Task --> Priority
